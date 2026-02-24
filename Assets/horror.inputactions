@@ -17,7 +17,7 @@
                 },
                 {
                     "name": "Look",
-                    "type": "Value",
+                    "type": "PassThrough",
                     "id": "06593068-249d-4123-a0e9-35e61643dec2",
                     "expectedControlType": "Vector2",
                     "processors": "",
@@ -37,6 +37,15 @@
                     "name": "Jump",
                     "type": "Button",
                     "id": "3d5546ed-1606-403b-b1c2-ea5b1b6f47b5",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Sprint",
+                    "type": "Button",
+                    "id": "1a2586e1-c98e-4a1f-bf5a-20e62887127d",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -272,6 +281,17 @@
                     "processors": "",
                     "groups": "",
                     "action": "Jump",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "e6e21eef-19ab-4c9a-8954-e2ff57d85dc8",
+                    "path": "<Keyboard>/shift",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Sprint",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
