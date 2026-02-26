@@ -17,6 +17,7 @@ public class AIPatrol : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        // AI walks to a random point on the NavMeshSurface
         if (agent.remainingDistance <= agent.stoppingDistance) 
         {
             Vector3 point;
@@ -28,6 +29,7 @@ public class AIPatrol : MonoBehaviour
         }
     }
     
+    // Generates a random point only on the NavMeshSurface
     bool RandomPoint(Vector3 center, float range, out Vector3 result)
     {
         Vector3 randomPoint = center + Random.insideUnitSphere * range; //random point in a sphere 

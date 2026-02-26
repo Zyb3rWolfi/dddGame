@@ -32,7 +32,8 @@ public class AIController : MonoBehaviour
             }
         }
     }
-
+    
+    // The AI will be required to face the player in order to end the game
     void FaceTarget()
     {
         Vector3 direction = (target.position - transform.position).normalized;
@@ -40,6 +41,7 @@ public class AIController : MonoBehaviour
         transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * 5f);
     }
     
+    // Creates a red sphere around the AI to see when the player enters its range
     void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.red;
