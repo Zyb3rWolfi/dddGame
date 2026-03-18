@@ -12,7 +12,7 @@ public class AIController : MonoBehaviour
     public Vector3 raycastOffset = new Vector3(0, 0.5f, 0);
     public float maxDetectionDistance = 50f;
     public float fieldOfViewAngle = 90f; // Total cone angle (45 degrees left/right)
-    
+    private bool isChasing = false;
     Transform target;
     NavMeshAgent agent;
     
@@ -29,64 +29,88 @@ public class AIController : MonoBehaviour
         Vector3 startPos = transform.position + raycastOffset;
         Vector3 targetPos = target.position + raycastOffset;
         Vector3 directionToPlayer = (targetPos - startPos).normalized;
+        //float distanceToPlayer = Vector3.Distance(target.position, transform.position);
 
-        // Check if the player is within the FOV cone
+        // Check Line of Sight
+        bool hasLineOfSight = false;
+        if (Physics.Raycast(startPos, directionToPlayer, out RaycastHit hit, maxDetectionDistance))
+        {
+            if (hit.transform == target)
+            {
+                hasLineOfSight = true;
+            }
+        }
+
+        // Detection Logic
         float angleToPlayer = Vector3.Angle(transform.forward, directionToPlayer);
 
-        if (angleToPlayer < fieldOfViewAngle / 2f)
+        // If we see the player in the cone OR we are already chasing and have line of sight
+        if ((angleToPlayer < fieldOfViewAngle / 2f && hasLineOfSight) || (isChasing && hasLineOfSight))
         {
-            // Only if they are in the cone, do we check for line-of-sight
-            if (Physics.Raycast(startPos, directionToPlayer, out RaycastHit hit, maxDetectionDistance))
-            {
-                if (hit.transform == target)
-                {
-                    Debug.DrawRay(startPos, directionToPlayer * hit.distance, Color.green); 
-                    agent.SetDestination(target.position);
-
-                    if (Vector3.Distance(target.position, transform.position) <= agent.stoppingDistance)
-                    {
-                        FaceTarget();
-                    }
-                }
-                else
-                {
-                    // Hit a wall or obstacle
-                    Debug.DrawRay(startPos, directionToPlayer * hit.distance, Color.yellow);
-                }
-            }
+            isChasing = true;
+            agent.SetDestination(target.position);
+            
+            // Always face the player while chasing so the FOV stays on them
+            FaceTarget(); 
         }
         else
         {
-            // Player is behind or to the side of the AI
-            Debug.DrawRay(startPos, directionToPlayer * 2f, Color.gray);
+            // If the player goes behind a wall, stop chasing
+            isChasing = false;
         }
         
-        
-        // if (distance <= lookRadius)
-        // {
-        //     agent.SetDestination(target.position);
+        // Vector3 startPos = transform.position + raycastOffset;
+        // Vector3 targetPos = target.position + raycastOffset;
+        // Vector3 directionToPlayer = (targetPos - startPos).normalized;
         //
-        //     if (distance <= agent.stoppingDistance)
+        // // Check if the player is within the FOV cone
+        // float angleToPlayer = Vector3.Angle(transform.forward, directionToPlayer);
+        //
+        // if (angleToPlayer < fieldOfViewAngle / 2f)
+        // {
+        //     // Only if they are in the cone, do we check for line-of-sight
+        //     if (Physics.Raycast(startPos, directionToPlayer, out RaycastHit hit, maxDetectionDistance))
         //     {
-        //         FaceTarget();
+        //         if (hit.transform == target)
+        //         {
+        //             Debug.DrawRay(startPos, directionToPlayer * hit.distance, Color.green); 
+        //             agent.SetDestination(target.position);
+        //
+        //             if (Vector3.Distance(target.position, transform.position) <= agent.stoppingDistance)
+        //             {
+        //                 FaceTarget();
+        //             }
+        //         }
+        //         else
+        //         {
+        //             // Hit a wall or obstacle
+        //             Debug.DrawRay(startPos, directionToPlayer * hit.distance, Color.yellow);
+        //         }
         //     }
+        // }
+        // else
+        // {
+        //     // Player is behind or to the side of the AI
+        //     Debug.DrawRay(startPos, directionToPlayer * 2f, Color.gray);
         // }
     }
     
     // The AI will be required to face the player in order to end the game
     void FaceTarget()
     {
+        // Vector3 direction = (target.position - transform.position).normalized;
+        // Quaternion lookRotation = Quaternion.LookRotation(new Vector3(direction.x, 0, direction.z));
+        // transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * 5f);
+        
         Vector3 direction = (target.position - transform.position).normalized;
-        Quaternion lookRotation = Quaternion.LookRotation(new Vector3(direction.x, 0, direction.z));
-        transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * 5f);
+        
+        // We only care about rotating on the Y axis
+        if (direction != Vector3.zero)
+        {
+            Quaternion lookRotation = Quaternion.LookRotation(new Vector3(direction.x, 0, direction.z));
+            transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * 5f);
+        }
     }
-    
-    //Creates a red sphere around the AI to see when the player enters its range
-    // void OnDrawGizmosSelected()
-    // {
-    //     Gizmos.color = Color.red;
-    //     Gizmos.DrawWireSphere(transform.position, maxDetectionDistance);
-    // }
     
     void OnDrawGizmos()
     {
