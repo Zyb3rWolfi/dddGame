@@ -7,6 +7,12 @@ public class AIController : MonoBehaviour
 {
     public float lookRadius = 10f;
     
+    // We add an offset so the raycast shoots from the AI's "eyes/chest" instead of its feet
+    [Header("Detection Settings")]
+    public Vector3 raycastOffset = new Vector3(0, 0.5f, 0);
+    public float maxDetectionDistance = 50f;
+    public float fieldOfViewAngle = 90f; // Total cone angle (45 degrees left/right)
+    
     Transform target;
     NavMeshAgent agent;
     
@@ -20,17 +26,51 @@ public class AIController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        float distance = Vector3.Distance(target.position, transform.position);
+        Vector3 startPos = transform.position + raycastOffset;
+        Vector3 targetPos = target.position + raycastOffset;
+        Vector3 directionToPlayer = (targetPos - startPos).normalized;
 
-        if (distance <= lookRadius)
+        // Check if the player is within the FOV cone
+        float angleToPlayer = Vector3.Angle(transform.forward, directionToPlayer);
+
+        if (angleToPlayer < fieldOfViewAngle / 2f)
         {
-            agent.SetDestination(target.position);
-
-            if (distance <= agent.stoppingDistance)
+            // Only if they are in the cone, do we check for line-of-sight
+            if (Physics.Raycast(startPos, directionToPlayer, out RaycastHit hit, maxDetectionDistance))
             {
-                FaceTarget();
+                if (hit.transform == target)
+                {
+                    Debug.DrawRay(startPos, directionToPlayer * hit.distance, Color.green); 
+                    agent.SetDestination(target.position);
+
+                    if (Vector3.Distance(target.position, transform.position) <= agent.stoppingDistance)
+                    {
+                        FaceTarget();
+                    }
+                }
+                else
+                {
+                    // Hit a wall or obstacle
+                    Debug.DrawRay(startPos, directionToPlayer * hit.distance, Color.yellow);
+                }
             }
         }
+        else
+        {
+            // Player is behind or to the side of the AI
+            Debug.DrawRay(startPos, directionToPlayer * 2f, Color.gray);
+        }
+        
+        
+        // if (distance <= lookRadius)
+        // {
+        //     agent.SetDestination(target.position);
+        //
+        //     if (distance <= agent.stoppingDistance)
+        //     {
+        //         FaceTarget();
+        //     }
+        // }
     }
     
     // The AI will be required to face the player in order to end the game
@@ -41,10 +81,19 @@ public class AIController : MonoBehaviour
         transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * 5f);
     }
     
-    // Creates a red sphere around the AI to see when the player enters its range
-    void OnDrawGizmosSelected()
+    //Creates a red sphere around the AI to see when the player enters its range
+    // void OnDrawGizmosSelected()
+    // {
+    //     Gizmos.color = Color.red;
+    //     Gizmos.DrawWireSphere(transform.position, maxDetectionDistance);
+    // }
+    
+    void OnDrawGizmos()
     {
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, lookRadius);
+        Gizmos.color = Color.white;
+        Vector3 leftRayDirection = Quaternion.AngleAxis(-fieldOfViewAngle / 2, Vector3.up) * transform.forward;
+        Vector3 rightRayDirection = Quaternion.AngleAxis(fieldOfViewAngle / 2, Vector3.up) * transform.forward;
+        Gizmos.DrawRay(transform.position + raycastOffset, leftRayDirection * maxDetectionDistance);
+        Gizmos.DrawRay(transform.position + raycastOffset, rightRayDirection * maxDetectionDistance);
     }
 }
