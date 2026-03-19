@@ -67,7 +67,14 @@ public class FirstPersonController : MonoBehaviour
 
     void Update()
     {
-        HandleRotation();
+        float mouseX = lookInput.x * mouseSensitivity;
+        rb.MoveRotation(rb.rotation * Quaternion.Euler(0, mouseX, 0));  
+        // 2. Vertical Rotation: Rotate ONLY the camera up/down
+        float mouseY = lookInput.y * mouseSensitivity;
+        verticalRotation -= mouseY;
+        verticalRotation = Mathf.Clamp(verticalRotation, upLimit, downLimit);
+        cameraTransform.localRotation = Quaternion.Euler(verticalRotation, 0f, 0f);
+        
         HandleSpeed();
     }
 
@@ -75,20 +82,7 @@ public class FirstPersonController : MonoBehaviour
     {
         HandleMovement();
     }
-
-    private void HandleRotation()
-    {
-        // 1. Horizontal Rotation: Rotate the whole Player body left/right
-        float mouseX = lookInput.x * mouseSensitivity;
-        transform.Rotate(Vector3.up * mouseX);
-
-        // 2. Vertical Rotation: Rotate ONLY the camera up/down
-        float mouseY = lookInput.y * mouseSensitivity;
-        verticalRotation -= mouseY;
-        verticalRotation = Mathf.Clamp(verticalRotation, upLimit, downLimit);
-        
-        cameraTransform.localRotation = Quaternion.Euler(verticalRotation, 0f, 0f);
-    }
+    
 
     private void HandleSpeed()
     {
