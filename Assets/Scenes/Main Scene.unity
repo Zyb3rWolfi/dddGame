@@ -527,11 +527,21 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1198885855}
   m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
---- !u!4 &76817386 stripped
+--- !u!4 &76817386
 Transform:
+  m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 7491979163668633625, guid: 321f55620c8937b4a8278c24adce9a2f, type: 3}
   m_PrefabInstance: {fileID: 6523497281175904216}
   m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 777834686}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0.89, y: 0.60793406, z: -8.61}
+  m_LocalScale: {x: 1.548, y: 1.548, z: 1.548}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1713226906}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &103288570
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3921,6 +3931,26 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 23696b12641c2d54a8bdaa31535a190b, type: 3}
+--- !u!1 &777834686
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 7832617330024153763, guid: 321f55620c8937b4a8278c24adce9a2f, type: 3}
+  m_PrefabInstance: {fileID: 6523497281175904216}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 76817386}
+  - component: {fileID: 6709671132409388630}
+  - component: {fileID: 6709671132409388629}
+  - component: {fileID: 793319333214250476}
+  - component: {fileID: 3819003477928067478}
+  m_Layer: 0
+  m_Name: Shelf 11
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
 --- !u!208 &847405601
 NavMeshObstacle:
   m_ObjectHideFlags: 0
@@ -10072,7 +10102,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1051930964034266857, guid: f521a167fbcdb88449b540021e2a773a, type: 3}
       propertyPath: m_Name
-      value: Shelf #1 (4)
+      value: Shelf
       objectReference: {fileID: 0}
     - target: {fileID: 2516709654450320017, guid: f521a167fbcdb88449b540021e2a773a, type: 3}
       propertyPath: m_LocalPosition.x
@@ -10176,6 +10206,28 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 478175dbd912fc3468f0d90ba95cb86e, type: 3}
+--- !u!64 &793319333214250476
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 5210886961094177576, guid: 321f55620c8937b4a8278c24adce9a2f, type: 3}
+  m_PrefabInstance: {fileID: 6523497281175904216}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 777834686}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: -5539357819512116934, guid: a5f18d3da25f96c4faebf494c671522f, type: 3}
 --- !u!1001 &1540322469208849703
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -10226,7 +10278,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5468746959684750958, guid: 8d0696f9fadc5a3438d426ddb4d5ae34, type: 3}
       propertyPath: m_Name
-      value: Shelf #1 (6)
+      value: Shelf
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -10283,7 +10335,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2728320993943523355, guid: 35b8419c1abdb0847810dfaacce9189c, type: 3}
       propertyPath: m_Name
-      value: Shelf #1 (2)
+      value: Shelf
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -10300,7 +10352,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 4284880672967497864, guid: 4c972b071eb96604db26f670166b085f, type: 3}
       propertyPath: m_Name
-      value: Shelf #1 (4)
+      value: Shelf
       objectReference: {fileID: 0}
     - target: {fileID: 4627620284182646267, guid: 4c972b071eb96604db26f670166b085f, type: 3}
       propertyPath: m_LocalPosition.x
@@ -10533,13 +10585,26 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8526377320497451139, guid: 4bf304538d2e2874486195b962d648bd, type: 3}
       propertyPath: m_Name
-      value: Shelf #1 (5)
+      value: Shelf
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4bf304538d2e2874486195b962d648bd, type: 3}
+--- !u!114 &3819003477928067478
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 963782744234268039, guid: 321f55620c8937b4a8278c24adce9a2f, type: 3}
+  m_PrefabInstance: {fileID: 6523497281175904216}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 777834686}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5bfcb675901bc6468cd417ef699d90e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hided: 1
 --- !u!1001 &4083390326356358949
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -10647,7 +10712,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2424418626886175159, guid: 474639fd1b151a3449588776f3bdc48f, type: 3}
       propertyPath: m_Name
-      value: Shelf #1
+      value: Shelf
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -10711,6 +10776,58 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 321f55620c8937b4a8278c24adce9a2f, type: 3}
+--- !u!23 &6709671132409388629
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 8625509867433960310, guid: 321f55620c8937b4a8278c24adce9a2f, type: 3}
+  m_PrefabInstance: {fileID: 6523497281175904216}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 777834686}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: -3762900601746147838, guid: a5f18d3da25f96c4faebf494c671522f, type: 3}
+  - {fileID: 2018963364504934140, guid: a5f18d3da25f96c4faebf494c671522f, type: 3}
+  - {fileID: -5081792898505675300, guid: a5f18d3da25f96c4faebf494c671522f, type: 3}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
+--- !u!33 &6709671132409388630
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 5789096737970313148, guid: 321f55620c8937b4a8278c24adce9a2f, type: 3}
+  m_PrefabInstance: {fileID: 6523497281175904216}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 777834686}
+  m_Mesh: {fileID: -5539357819512116934, guid: a5f18d3da25f96c4faebf494c671522f, type: 3}
 --- !u!1001 &7449730065166902393
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -10761,7 +10878,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5742075836405948181, guid: e3160e70889a90e438d522f4d3215fcb, type: 3}
       propertyPath: m_Name
-      value: Shelf #1 (1)
+      value: Shelf
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -10779,7 +10896,7 @@ GameObject:
   - component: {fileID: 2339168570426176425}
   - component: {fileID: 847405601}
   m_Layer: 0
-  m_Name: Shelf #1 (3)
+  m_Name: Shelf
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -10795,7 +10912,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2339168570377977226}
   m_Layer: 0
-  m_Name: Shelf #1 (4)
+  m_Name: Shelf
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -10811,7 +10928,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2339168569759741681}
   m_Layer: 0
-  m_Name: Shelf #1 (6)
+  m_Name: Shelf
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -10828,7 +10945,7 @@ GameObject:
   - component: {fileID: 2339168569456350068}
   - component: {fileID: 1219789508}
   m_Layer: 0
-  m_Name: Shelf #1 (1)
+  m_Name: Shelf
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -10845,7 +10962,7 @@ GameObject:
   - component: {fileID: 2339168569418558293}
   - component: {fileID: 1299413733}
   m_Layer: 0
-  m_Name: Shelf #1
+  m_Name: Shelf
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -10862,7 +10979,7 @@ GameObject:
   - component: {fileID: 2339168569569571666}
   - component: {fileID: 1760466367}
   m_Layer: 0
-  m_Name: Shelf #1 (4)
+  m_Name: Shelf
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -10879,7 +10996,7 @@ GameObject:
   - component: {fileID: 2339168569137050110}
   - component: {fileID: 2086856097}
   m_Layer: 0
-  m_Name: Shelf #1 (5)
+  m_Name: Shelf
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -10896,7 +11013,7 @@ GameObject:
   - component: {fileID: 2339168568995226709}
   - component: {fileID: 1681454565}
   m_Layer: 0
-  m_Name: Shelf #1 (2)
+  m_Name: Shelf
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -10912,7 +11029,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 6973323805614505880, guid: 8d2a46d27de21954ebad9b387326245c, type: 3}
       propertyPath: m_Name
-      value: Shelf #1 (3)
+      value: Shelf
       objectReference: {fileID: 0}
     - target: {fileID: 9135613686384884384, guid: 8d2a46d27de21954ebad9b387326245c, type: 3}
       propertyPath: m_LocalPosition.x
