@@ -8,6 +8,8 @@ using UnityEngine.InputSystem;
 public class Interaction : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI interactText;
+    public static Action<int> onPuzzleSubmit;
+    public static Action PlayKeyboardSfx;
     
     private float distanceToInteract = 5f;
     // Start is called before the first frame update
@@ -53,11 +55,18 @@ public class Interaction : MonoBehaviour
                 if (hit.collider.CompareTag("Interactable") && !puzzle.IsPuzzleCompleted)
                 {
                     // Implement interaction logic here
+                    PlayKeyboardSfx?.Invoke();
                     puzzle.ShowUI();
+                    puzzle.inProgress = true;
                     Cursor.lockState = CursorLockMode.None;
                     Cursor.visible = true;
                 }
             }
         }
+    }
+
+    public void SendActionToCheck(int buttonIndex)
+    {
+        onPuzzleSubmit?.Invoke(buttonIndex);
     }
 }

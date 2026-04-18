@@ -1,3 +1,5 @@
+using System;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -17,13 +19,51 @@ public class FirstPersonController : MonoBehaviour
     [SerializeField] private float mouseSensitivity = 0.1f;
     [SerializeField] private float upLimit = -90f;
     [SerializeField] private float downLimit = 90f;
-
+    [SerializeField] public bool isPlayerCaught = false;
+    
+    [SerializeField] private GameObject[] respawnPoints;
+    [SerializeField] private SphereCollider audioTrigger; // For proximity-based audio cues
+    [SerializeField] private float walkingRadius = 5f; // Radius for walking audio cues
+    [SerializeField] private float sprintingRadius = 10f; // Radius for sprinting audio cues
+    
     // Internal State
     private Vector2 moveInput;
     private Vector2 lookInput;
     private float currentSpeed;
     private float verticalRotation = 0f;
     private bool isSprinting;
+    
+    public static Action PlayWalkingSfx;
+    public static Action PlaySprintingSfx;
+    public static Action PlayJumpingSfx;
+
+    private void OnEnable()
+    {
+        
+            AIController.OnPlayerCaught += PlayerCaught;
+            UIManager.ResetPosition += ResetPlayerPos;
+        
+    }
+
+    private void OnDisable()
+    {
+        AIController.OnPlayerCaught -= PlayerCaught;
+        UIManager.ResetPosition -= ResetPlayerPos;
+    }
+    
+    private void PlayerCaught()
+    {
+        isPlayerCaught = true;
+    }
+    
+    private void ResetPlayerPos()
+    {
+        // Choose a random respawn point
+        GameObject respawnPoint = respawnPoints[UnityEngine.Random.Range(0, respawnPoints.Length)];
+        transform.position = respawnPoint.transform.position;
+        transform.rotation = respawnPoint.transform.rotation;
+        isPlayerCaught = false;
+    }
 
     void Awake()
     {
@@ -61,6 +101,7 @@ public class FirstPersonController : MonoBehaviour
         if (context.started && Mathf.Abs(rb.velocity.y) < 0.01f) // Simple check to prevent double jumps
         {
             rb.AddForce(Vector3.up * 5f, ForceMode.VelocityChange);
+            PlayJumpingSfx?.Invoke();
         }
     }
 
@@ -101,5 +142,23 @@ public class FirstPersonController : MonoBehaviour
         newVelocity.y = rb.velocity.y;
 
         rb.velocity = newVelocity;
+        
+        // Play walking SFX if moving and on the ground
+        if (moveInput.magnitude > 0.1f && Mathf.Abs(rb.velocity.y) < 0.01f)
+        {
+            audioTrigger.enabled = true; // Enable the audio trigger when walking
+            if (isSprinting)
+            {
+                PlaySprintingSfx?.Invoke();
+                audioTrigger.radius = sprintingRadius; // Set larger radius for sprinting
+            }
+            else
+            {
+                PlayWalkingSfx?.Invoke();   
+                audioTrigger.radius = walkingRadius; // Set smaller radius for walking
+            }
+        } else {
+            audioTrigger.enabled = false; // Disable the audio trigger when not walking
+        }
     }
 }

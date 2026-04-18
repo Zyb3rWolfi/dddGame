@@ -20,10 +20,12 @@ public class DenaryPuzzle : MonoBehaviour
     [SerializeField] private TextMeshProUGUI timer;
     [SerializeField] private bool isPuzzleCompleted = false;
     [SerializeField] private GameObject material;
+    [SerializeField] public bool inProgress;
     
     // Random questions and answers
     [SerializeField] private PuzzleQuestions[] questions;
     public static Action OnPuzzleComplete;
+    public static Action StopKeyboardSfx;
     private PuzzleQuestions chosenQuestion;
     
     private void Start() => GenerateProblem();
@@ -32,7 +34,17 @@ public class DenaryPuzzle : MonoBehaviour
         if (isPuzzleCompleted) return;
         chosenQuestion = questions[Random.Range(0, questions.Length)];
     }
+
+    private void OnEnable()
+    {
+        Interaction.onPuzzleSubmit += CheckAnswer;
+    }
     
+    private void OnDisable()
+    {
+        Interaction.onPuzzleSubmit -= CheckAnswer;
+    }
+
     public void ShowUI()
     {
         uiPanel.SetActive(true);
@@ -48,6 +60,7 @@ public class DenaryPuzzle : MonoBehaviour
 
     public void CheckAnswer(int buttonIndex)
     {
+        if (this.inProgress == false) return;
         if (buttonIndex == chosenQuestion.correctAnswerIndex)
         {
             uiPanel.SetActive(false);
@@ -56,6 +69,7 @@ public class DenaryPuzzle : MonoBehaviour
             OnPuzzleComplete?.Invoke();
             material.GetComponent<MeshRenderer>().material.color = Color.green; // Change material color to green on correct answer
             isPuzzleCompleted = true;
+            StopKeyboardSfx?.Invoke();
         }
     }
     

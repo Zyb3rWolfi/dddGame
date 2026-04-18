@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -10,14 +11,36 @@ public class AIController : MonoBehaviour
     public float maxDetectionDistance = 50f;
     [SerializeField] float fieldOfViewAngle = 45f; // Total cone angle (45 degrees left/right)
     private bool isChasing = false;
+    private bool canHearPlayer = false;
     Transform target;
     NavMeshAgent agent;
+    public static Action OnPlayerCaught;
+    [SerializeField] private GameObject[] respawnPoints;
+
     
     // Start is called before the first frame update
     void Start()
     {
         target = PlayerManager.instance.player.transform;
         agent = GetComponent<NavMeshAgent>();
+    }
+
+    private void OnEnable()
+    {
+        UIManager.ResetPosition += Respawn;
+    }
+
+    private void OnDisable()
+    {
+        UIManager.ResetPosition -= Respawn;
+    }
+
+    private void Respawn()
+    {
+        // Choose a random respawn point
+        GameObject respawnPoint = respawnPoints[UnityEngine.Random.Range(0, respawnPoints.Length)];
+        transform.position = respawnPoint.transform.position;
+        transform.rotation = respawnPoint.transform.rotation;
     }
 
     // Update is called once per frame
@@ -42,7 +65,7 @@ public class AIController : MonoBehaviour
         float angleToPlayer = Vector3.Angle(transform.forward, directionToPlayer);
 
         // If we see the player in the cone OR we are already chasing and have line of sight
-        if ((angleToPlayer < fieldOfViewAngle / 2f && hasLineOfSight) || (isChasing && hasLineOfSight))
+        if ((angleToPlayer < fieldOfViewAngle / 2f && hasLineOfSight) || (isChasing && hasLineOfSight) || canHearPlayer)
         {
             isChasing = true;
             agent.SetDestination(target.position);
@@ -55,8 +78,32 @@ public class AIController : MonoBehaviour
             // If the player goes behind a wall, stop chasing
             isChasing = false;
         }
+        
+        if (distanceToPlayer <= agent.stoppingDistance)
+        {
+            // Implement game over logic here
+            OnPlayerCaught?.Invoke();
+        }
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.tag == "Footsteps")
+        {
+            target = other.transform.parent; // Set target to the player who made the noise
+            canHearPlayer = true;
+            
+        }
     }
     
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.tag == "Footsteps")
+        {
+            canHearPlayer = false;
+        }
+    }
+
     // The AI will be required to face the player in order to end the game
     void FaceTarget()
     {
