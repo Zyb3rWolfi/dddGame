@@ -5,26 +5,45 @@ using UnityEngine.AI;
 public class AIController : MonoBehaviour
 {
     public float lookRadius = 10f;
-    
+    public enum AIState { Patrolling, Chasing, Investigating }
+    [SerializeField] public AIState previousState; // Add this at the top of your class
+    public AIState currentState = AIState.Patrolling;
     [Header("Detection Settings")]
     public Vector3 raycastOffset = new Vector3(0, 0.5f, 0);
     public float maxDetectionDistance = 50f;
     [SerializeField] float fieldOfViewAngle = 45f; // Total cone angle (45 degrees left/right)
+    public Vector3 lastKnownPlayerPosition;
     private bool isChasing = false;
     private bool canHearPlayer = false;
     Transform target;
     NavMeshAgent agent;
     public static Action OnPlayerCaught;
     [SerializeField] private GameObject[] respawnPoints;
-
+    [SerializeField] public Animator animator;
+    public static Action playSfx;
+    public static Action playInvestigationSfx;
+    public static Action playAmbientSfx;
+    [Header("Search Settings")]
+    public float searchWaitTime = 3f; // How long to look around before giving up
+    private float searchTimer;
+    private bool isSearching = false;
+    [Header("Chase Settings")]
+    [SerializeField] private float chaseGracePeriod = 3f; // Stay in Chase for 3s after losing LoS
+    private float lastSeenTime;
+    public static Action<AIState> HAndleStateAudioChange;
+    
+    
+    // I have basically changed some stuff in this script to allow the AI to be more unpredictable and in a way fun. It does need a bit more tweaking
     
     // Start is called before the first frame update
     void Start()
     {
         target = PlayerManager.instance.player.transform;
         agent = GetComponent<NavMeshAgent>();
+        lastKnownPlayerPosition = transform.position; // Initialize to current position
     }
-
+    
+    // These were added to allow the enemy to respawn.
     private void OnEnable()
     {
         UIManager.ResetPosition += Respawn;
@@ -46,53 +65,93 @@ public class AIController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        
+        // This controls when the footsteps sfx should play aka when there is velocity
+        if (agent.velocity.magnitude > 0.1f)
+        {
+            playSfx?.Invoke();
+        }
+            
         Vector3 startPos = transform.position + raycastOffset;
         Vector3 targetPos = target.position + raycastOffset;
         Vector3 directionToPlayer = (targetPos - startPos).normalized;
         float distanceToPlayer = Vector3.Distance(target.position, transform.position);
+        animator.SetFloat("Velocity", agent.velocity.magnitude);
 
         // Check Line of Sight
         bool hasLineOfSight = false;
-        if (Physics.Raycast(startPos, directionToPlayer, out RaycastHit hit, maxDetectionDistance))
-        {
-            if (hit.transform == target)
-            {
-                hasLineOfSight = true;
-            }
-        }
 
         // Detection Logic
         float angleToPlayer = Vector3.Angle(transform.forward, directionToPlayer);
 
         // If we see the player in the cone OR we are already chasing and have line of sight
-        if ((angleToPlayer < fieldOfViewAngle / 2f && hasLineOfSight) || (isChasing && hasLineOfSight) || canHearPlayer)
+        if (angleToPlayer < fieldOfViewAngle / 2f)
         {
-            isChasing = true;
-            agent.SetDestination(target.position);
-            
-            // Always face the player while chasing so the FOV stays on them
-            FaceTarget(); 
-        }
-        else
-        {
-            // If the player goes behind a wall, stop chasing
-            isChasing = false;
+            if (Physics.Raycast(startPos, directionToPlayer, out RaycastHit hit, maxDetectionDistance))
+            {
+                if (hit.transform == target) hasLineOfSight = true;
+            }
         }
         
-        if (distanceToPlayer <= agent.stoppingDistance)
+        // If the AI has the line of sight we would change the enum to Chasing.
+        if (hasLineOfSight)
         {
-            // Implement game over logic here
-            OnPlayerCaught?.Invoke();
+            currentState = AIState.Chasing;
+            isSearching = false;
+            agent.SetDestination(target.position);
+            FaceTarget();
         }
+        
+        // Whereas if the enemy no longer sees the player then we would put it under investigating.
+        // This allows the AI to do some "smart" finding and not cheat it way into finding the player
+        else if (currentState == AIState.Chasing && !hasLineOfSight)
+        {
+            currentState = AIState.Investigating;
+            lastKnownPlayerPosition = target.position;
+            agent.SetDestination(lastKnownPlayerPosition);
+        }
+        
+        if (currentState == AIState.Investigating && !agent.pathPending && agent.remainingDistance <= agent.stoppingDistance)        {
+            if (!isSearching)
+            {
+                isSearching = true;
+                searchTimer = searchWaitTime;
+            }
+
+            if (isSearching)
+            {
+                searchTimer -= Time.deltaTime;
+        
+                if (searchTimer <= 0)
+                {
+                    currentState = AIState.Patrolling;
+                    isSearching = false;
+                    // Go back to a random patrol point or stay still
+                }
+            }
+        }
+
+        // return to patrol if he couldnt find anything
+        if (currentState == AIState.Investigating && agent.remainingDistance <= agent.stoppingDistance)
+        {
+            currentState = AIState.Patrolling;
+        }
+
+        if (currentState != previousState)
+        {
+            Debug.Log($"AI State changed to: {currentState}");
+            HAndleStateAudioChange?.Invoke(currentState);
+        }
+        previousState = currentState;
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.tag == "Footsteps")
+        if (other.tag == "Footsteps" && currentState != AIState.Chasing)
         {
-            target = other.transform.parent; // Set target to the player who made the noise
-            canHearPlayer = true;
-            
+            currentState = AIState.Investigating;
+            lastKnownPlayerPosition = target.position; // Take a "Snapshot" of their current spot
+            agent.SetDestination(lastKnownPlayerPosition);
         }
     }
     

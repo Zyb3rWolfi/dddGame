@@ -11,6 +11,9 @@ public class UIManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI puzzlesCompleteText;
     [SerializeField] private TextMeshProUGUI timerText;
     [SerializeField] private GameObject DarknessOverlay;
+    [SerializeField] private GameObject finishLine;
+    [SerializeField] private GameObject finishScreen;
+    
     public float realTimeLimit = 300f;
     private float elapsedRealTime = 0f;
 
@@ -19,6 +22,7 @@ public class UIManager : MonoBehaviour
     private int puzzlesCompleted = 0;
     
     public static Action ResetPosition;
+    public static Action openElevator;
 
     private void Start()
     {
@@ -30,12 +34,14 @@ public class UIManager : MonoBehaviour
         
         DenaryPuzzle.OnPuzzleComplete += OnPuzzleComplete;
         AIController.OnPlayerCaught += PlayerCaughtScreen;
+        FirstPersonController.levelFinished += ShowFinishScreen;
     }
 
     private void OnDisable()
     {
         DenaryPuzzle.OnPuzzleComplete -= OnPuzzleComplete;
         AIController.OnPlayerCaught -= PlayerCaughtScreen;
+        FirstPersonController.levelFinished -= ShowFinishScreen;
     }
 
     private void OnPuzzleComplete()
@@ -44,6 +50,7 @@ public class UIManager : MonoBehaviour
         if (puzzlesCompleted >= 2)
         {
             puzzlesCompleteText.text = "All puzzles completed! Exit via the elevator...";
+            openElevator?.Invoke();
             return;
         }
         puzzlesCompleteText.text = $"Find & Complete Puzzles to exit [{puzzlesCompleted}/2]";
@@ -85,6 +92,13 @@ public class UIManager : MonoBehaviour
         yield return new WaitForSeconds(duration);
         ResetPosition?.Invoke();
         DarknessOverlay.SetActive(false);
+    }
+    
+    private void ShowFinishScreen()
+    {
+        finishScreen.SetActive(true);
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
     }
 }
 
