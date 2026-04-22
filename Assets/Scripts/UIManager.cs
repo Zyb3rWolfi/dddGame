@@ -14,6 +14,8 @@ public class UIManager : MonoBehaviour
     [SerializeField] private GameObject finishLine;
     [SerializeField] private GameObject finishScreen;
     
+    [SerializeField] private Slider staminaBar; // Assign your UI Slider here
+    
     public float realTimeLimit = 300f;
     private float elapsedRealTime = 0f;
 
@@ -27,6 +29,8 @@ public class UIManager : MonoBehaviour
     private void Start()
     {
         playerController = FindObjectOfType<FirstPersonController>();
+        
+        if (staminaBar != null) staminaBar.value = 1f;
     }
 
     private void OnEnable()
@@ -35,6 +39,8 @@ public class UIManager : MonoBehaviour
         DenaryPuzzle.OnPuzzleComplete += OnPuzzleComplete;
         AIController.OnPlayerCaught += PlayerCaughtScreen;
         FirstPersonController.levelFinished += ShowFinishScreen;
+        
+        FirstPersonController.OnStaminaChanged += UpdateStaminaUI;
     }
 
     private void OnDisable()
@@ -42,8 +48,18 @@ public class UIManager : MonoBehaviour
         DenaryPuzzle.OnPuzzleComplete -= OnPuzzleComplete;
         AIController.OnPlayerCaught -= PlayerCaughtScreen;
         FirstPersonController.levelFinished -= ShowFinishScreen;
+        
+        FirstPersonController.OnStaminaChanged -= UpdateStaminaUI;
     }
-
+    
+    private void UpdateStaminaUI(float staminaPercentage)
+    {
+        if (staminaBar != null)
+        {
+            staminaBar.value = staminaPercentage;
+        }
+    }
+    
     private void OnPuzzleComplete()
     {
         puzzlesCompleted++;

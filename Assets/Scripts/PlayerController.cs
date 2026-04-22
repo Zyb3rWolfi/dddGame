@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI; 
 
 [RequireComponent(typeof(Rigidbody), typeof(CapsuleCollider))]
 public class FirstPersonController : MonoBehaviour
@@ -26,6 +27,13 @@ public class FirstPersonController : MonoBehaviour
     [SerializeField] private float crouchSpeed = 2.5f;
     [SerializeField] private float acceleration = 8f;
     
+    [Header("Stamina Settings")]
+    [SerializeField] private float maxStamina = 100f;
+    [SerializeField] private float staminaDrainRate = 20f;
+    [SerializeField] private float staminaRegenRate = 15f; 
+    [SerializeField] private float jumpStaminaCost = 25f;  
+    [SerializeField] private float staminaRegenDelay = 1.5f; 
+    
     [Header("Look Settings")]
     [SerializeField] private float mouseSensitivity = 0.1f;
     [SerializeField] private float upLimit = -90f;
@@ -35,7 +43,7 @@ public class FirstPersonController : MonoBehaviour
     [SerializeField] private SphereCollider audioTrigger; 
     [SerializeField] private float walkingRadius = 5f; 
     [SerializeField] private float sprintingRadius = 10f;
-
+    
     // Internal State
     private Vector2 moveInput;
     private Vector2 lookInput;
@@ -47,11 +55,17 @@ public class FirstPersonController : MonoBehaviour
     public bool isPlayerCaught = false;
     [SerializeField] private GameObject[] respawnPoints;
     
+    private float currentStamina;
+    private float regenTimer;
+    private bool isExhausted = false; // Replaced canSprint with an exhaustion state
+    
     public static Action PlayWalkingSfx;
     public static Action PlaySprintingSfx;
     public static Action PlayJumpingSfx;
     public static Action levelFinished;
 
+    public static Action<float> OnStaminaChanged;
+    
     private void OnEnable()
     {
         AIController.OnPlayerCaught += PlayerCaught;
@@ -75,8 +89,9 @@ public class FirstPersonController : MonoBehaviour
 
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
-
+        
         currentHeight = standardHeight;
+        currentStamina = maxStamina; // Initialize Stamina
     }
 
     // --- INPUT SYSTEM CALLBACKS ---
@@ -107,8 +122,26 @@ public class FirstPersonController : MonoBehaviour
     {
         if (context.started && Mathf.Abs(rb.velocity.y) < 0.01f) 
         {
-            rb.AddForce(Vector3.up * 5f, ForceMode.VelocityChange);
-            PlayJumpingSfx?.Invoke();
+            // rb.AddForce(Vector3.up * 5f, ForceMode.VelocityChange);
+            // PlayJumpingSfx?.Invoke();
+            
+            if (currentStamina >= jumpStaminaCost)
+            {
+                currentStamina -= jumpStaminaCost;
+                regenTimer = staminaRegenDelay; // Delay regen
+                
+                // If the jump drains the last of your stamina, you become exhausted
+                if (currentStamina <= 0f)
+                {
+                    currentStamina = 0f;
+                    isExhausted = true;
+                }
+                
+                OnStaminaChanged?.Invoke(currentStamina / maxStamina); // Update UI
+                
+                rb.AddForce(Vector3.up * 5f, ForceMode.VelocityChange);
+                PlayJumpingSfx?.Invoke();
+            }
         }
     }
 
@@ -116,7 +149,8 @@ public class FirstPersonController : MonoBehaviour
     {
         HandleLook();
         HandleSpeed();
-        HandleCrouchHeight(); 
+        HandleStamina();
+        HandleCrouchHeight();
     }
 
     void FixedUpdate()
@@ -140,9 +174,61 @@ public class FirstPersonController : MonoBehaviour
     {
         float targetSpeed = walkSpeed;
         if (isCrouching) targetSpeed = crouchSpeed;
-        else if (isSprinting) targetSpeed = sprintSpeed;
+        //else if (isSprinting) targetSpeed = sprintSpeed;
+        else if (isSprinting && !isExhausted && moveInput.magnitude > 0.1f)
+        {
+            targetSpeed = sprintSpeed;
+        }
 
         currentSpeed = Mathf.MoveTowards(currentSpeed, targetSpeed, acceleration * Time.deltaTime);
+    }
+    
+    private void HandleStamina()
+    {
+        bool isActivelySprinting = isSprinting && !isExhausted && moveInput.magnitude > 0.1f && !isCrouching;
+
+        if (isActivelySprinting)
+        {
+            // Drain stamina
+            currentStamina -= staminaDrainRate * Time.deltaTime;
+            regenTimer = staminaRegenDelay; // Reset the regen delay timer
+
+            if (currentStamina <= 0f)
+            {
+                currentStamina = 0f;
+                isExhausted = true; // Lock player out of sprinting
+            }
+            
+            OnStaminaChanged?.Invoke(currentStamina / maxStamina);
+        }
+        else
+        {
+            // Regenerate stamina
+            if (regenTimer > 0)
+            {
+                regenTimer -= Time.deltaTime;
+            }
+            else if (currentStamina < maxStamina)
+            {
+                currentStamina += staminaRegenRate * Time.deltaTime;
+                
+                if (currentStamina > maxStamina) 
+                    currentStamina = maxStamina;
+                
+                OnStaminaChanged?.Invoke(currentStamina / maxStamina);
+            }
+            
+            // Unlock sprinting ONLY when stamina hits 25% AND the player lets go of the sprint key
+            if (isExhausted && currentStamina >= maxStamina * 0.25f)
+            {
+                if (!isSprinting) 
+                {
+                    isExhausted = false;
+                }
+            }
+        }
+
+        OnStaminaChanged?.Invoke(currentStamina / maxStamina);
     }
 
     private void HandleCrouchHeight()
@@ -160,11 +246,13 @@ public class FirstPersonController : MonoBehaviour
         Vector3 camPos = cameraTransform.localPosition;
         camPos.y = Mathf.Lerp(camPos.y, targetCamY, Time.deltaTime * crouchTransitionSpeed);
         cameraTransform.localPosition = camPos;
-
-        if (!isCrouching && currentHeight > lastHeight)
-        {
-            rb.position += Vector3.up * 0.02f; 
-        }
+        
+        // When uncrouching causes the player to jump
+        // Removed for now
+        // if (!isCrouching && currentHeight > lastHeight)
+        // {
+        //     rb.position += Vector3.up * 0.02f; 
+        // }
     }
 
     private void HandleMovement()
@@ -181,7 +269,12 @@ public class FirstPersonController : MonoBehaviour
             
             if (!isCrouching)
             {
-                if (isSprinting)
+                // if (isSprinting)
+                // {
+                //     PlaySprintingSfx?.Invoke();
+                //     audioTrigger.radius = sprintingRadius;
+                // }
+                if (isSprinting && !isExhausted) 
                 {
                     PlaySprintingSfx?.Invoke();
                     audioTrigger.radius = sprintingRadius;
