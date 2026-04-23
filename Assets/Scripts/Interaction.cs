@@ -11,7 +11,7 @@ public class Interaction : MonoBehaviour
     public static Action<int> onPuzzleSubmit;
     public static Action PlayKeyboardSfx;
     
-    private float distanceToInteract = 5f;
+    private float distanceToInteract = 2f;
     // Start is called before the first frame update
     void Start()
     {

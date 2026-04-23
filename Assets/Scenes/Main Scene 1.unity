@@ -5299,7 +5299,7 @@ RectTransform:
   m_GameObject: {fileID: 878525009}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 2, y: 2, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1318458015}
@@ -5309,7 +5309,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -20.5, y: -235.8}
+  m_AnchoredPosition: {x: 1, y: -456}
   m_SizeDelta: {x: 160, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &878525011
@@ -12200,6 +12200,22 @@ PrefabInstance:
     - target: {fileID: 230570710838922682, guid: 6b3637034cff4bf42bb365c0332d738f, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
       value: Interaction, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 643533106408821077, guid: 6b3637034cff4bf42bb365c0332d738f, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 750.34
+      objectReference: {fileID: 0}
+    - target: {fileID: 643533106408821077, guid: 6b3637034cff4bf42bb365c0332d738f, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 51.3036
+      objectReference: {fileID: 0}
+    - target: {fileID: 643533106408821077, guid: 6b3637034cff4bf42bb365c0332d738f, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 538
+      objectReference: {fileID: 0}
+    - target: {fileID: 643533106408821077, guid: 6b3637034cff4bf42bb365c0332d738f, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 480.65
       objectReference: {fileID: 0}
     - target: {fileID: 1396937396827500311, guid: 6b3637034cff4bf42bb365c0332d738f, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
