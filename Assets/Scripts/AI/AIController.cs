@@ -65,6 +65,8 @@ public class AIController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+
+       
         
         // This controls when the footsteps sfx should play aka when there is velocity
         if (agent.velocity.magnitude > 0.1f)
@@ -77,6 +79,11 @@ public class AIController : MonoBehaviour
         Vector3 directionToPlayer = (targetPos - startPos).normalized;
         float distanceToPlayer = Vector3.Distance(target.position, transform.position);
         animator.SetFloat("Velocity", agent.velocity.magnitude);
+        if (distanceToPlayer < 2f) {
+            
+            OnPlayerCaught?.Invoke();
+        }
+
 
         // Check Line of Sight
         bool hasLineOfSight = false;

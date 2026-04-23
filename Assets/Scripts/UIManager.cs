@@ -38,7 +38,7 @@ public class UIManager : MonoBehaviour
         
         DenaryPuzzle.OnPuzzleComplete += OnPuzzleComplete;
         AIController.OnPlayerCaught += PlayerCaughtScreen;
-        FirstPersonController.levelFinished += ShowFinishScreen;
+        ElevatorFinish.levelFinished += ShowFinishScreen;
         
         FirstPersonController.OnStaminaChanged += UpdateStaminaUI;
     }
@@ -47,7 +47,7 @@ public class UIManager : MonoBehaviour
     {
         DenaryPuzzle.OnPuzzleComplete -= OnPuzzleComplete;
         AIController.OnPlayerCaught -= PlayerCaughtScreen;
-        FirstPersonController.levelFinished -= ShowFinishScreen;
+        ElevatorFinish.levelFinished -= ShowFinishScreen;
         
         FirstPersonController.OnStaminaChanged -= UpdateStaminaUI;
     }

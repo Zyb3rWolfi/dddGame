@@ -244,9 +244,12 @@ MonoBehaviour:
   timer: {fileID: 0}
   isPuzzleCompleted: 0
   material: {fileID: 8963301394768647230}
+  inProgress: 0
   questions:
   - {fileID: 11400000, guid: 4ade9b46c43b3e445b407339c5584ca6, type: 2}
   - {fileID: 11400000, guid: 24216efe3c9fcbc428ee566b790f1ead, type: 2}
+  - {fileID: 11400000, guid: e53165d569b49df4fb79790d5d78df01, type: 2}
+  - {fileID: 11400000, guid: 0655c89dab5bcc44182a13c42f4162a0, type: 2}
 --- !u!1 &8963301394768647230 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: -3957782524123411102, guid: 9adfc680bc522574dbd0b0cb5983dfe8, type: 3}
