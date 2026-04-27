@@ -47,13 +47,22 @@ public class AIController : MonoBehaviour
     private void OnEnable()
     {
         UIManager.ResetPosition += Respawn;
+        DenaryPuzzle.exposeLocation += GetPlayerPosition;
     }
 
     private void OnDisable()
     {
         UIManager.ResetPosition -= Respawn;
+        DenaryPuzzle.exposeLocation -= GetPlayerPosition;
     }
 
+    private void GetPlayerPosition(Vector3 playerPosition)
+    {
+        lastKnownPlayerPosition  = playerPosition;
+        agent.SetDestination(playerPosition);
+        currentState = AIState.Investigating;
+        
+    }
     private void Respawn()
     {
         // Choose a random respawn point
@@ -61,7 +70,7 @@ public class AIController : MonoBehaviour
         transform.position = respawnPoint.transform.position;
         transform.rotation = respawnPoint.transform.rotation;
     }
-
+    
     // Update is called once per frame
     void Update()
     {

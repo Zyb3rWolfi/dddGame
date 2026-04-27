@@ -27,6 +27,7 @@ public class DenaryPuzzle : MonoBehaviour
     public static Action OnPuzzleComplete;
     public static Action StopKeyboardSfx;
     private PuzzleQuestions chosenQuestion;
+    public static Action<Vector3> exposeLocation;
     
     private void Start() => GenerateProblem();
     public void GenerateProblem()
@@ -49,7 +50,7 @@ public class DenaryPuzzle : MonoBehaviour
     {
         uiPanel.SetActive(true);
         question.text = chosenQuestion.question;
-        StartCoroutine(StartTimer(10));
+        StartCoroutine(StartTimer(5));
         int i = 0;
         foreach (var button in answerButtons.GetComponentsInChildren<Button>())
         {
@@ -69,7 +70,12 @@ public class DenaryPuzzle : MonoBehaviour
             OnPuzzleComplete?.Invoke();
             material.GetComponent<MeshRenderer>().material.color = Color.green; // Change material color to green on correct answer
             isPuzzleCompleted = true;
+            inProgress = false;
             StopKeyboardSfx?.Invoke();
+        }
+        else
+        {
+            PenalizePlayer();
         }
     }
     
@@ -82,8 +88,37 @@ public class DenaryPuzzle : MonoBehaviour
             yield return new WaitForSeconds(1f);
             timeRemaining -= 1f;
         }
-        timer.text = "Time's up!";
-        // Implement logic for when time runs out (e.g., reset puzzle, penalize player, etc.)
+
+        if (inProgress)
+        {
+            timer.text = "Time's up!";
+            PenalizePlayer();  
+        };
+
+    }
+
+    private void PenalizePlayer()
+    {
+        Light[] lights = GameObject.FindObjectsOfType<Light>();
+        exposeLocation?.Invoke(gameObject.transform.position);
+        uiPanel.SetActive(false);
+        inProgress = false;
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+        StartCoroutine(turnOff(lights));
+    }
+    
+    IEnumerator turnOff(Light[] lights)
+    {
+        foreach (Light l in lights)
+        {
+            l.enabled = false;
+        }
+        yield return new WaitForSeconds(5f);
+        foreach (Light l in lights)
+            {
+            l.enabled = true;
+            }
     }
 
 }

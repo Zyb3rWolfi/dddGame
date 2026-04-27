@@ -7,17 +7,20 @@ using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
 {
+    
     FirstPersonController playerController;
     [SerializeField] private TextMeshProUGUI puzzlesCompleteText;
     [SerializeField] private TextMeshProUGUI timerText;
     [SerializeField] private GameObject DarknessOverlay;
     [SerializeField] private GameObject finishLine;
     [SerializeField] private GameObject finishScreen;
-    
+    [SerializeField] Thresholds thresholds;
     [SerializeField] private Slider staminaBar; // Assign your UI Slider here
+    [SerializeField] private TextMeshProUGUI gradeText;
     
     public float realTimeLimit = 300f;
-    private float elapsedRealTime = 0f;
+    [SerializeField]private float elapsedRealTime = 0f;
+    private bool isLevelFinished = false;
 
     private float startSeconds = 23f * 3600f;
     
@@ -74,14 +77,25 @@ public class UIManager : MonoBehaviour
 
     private void Update()
     {
-        if (elapsedRealTime < realTimeLimit)
+        if (!isLevelFinished)
         {
-            elapsedRealTime += Time.deltaTime;
+            if (elapsedRealTime < realTimeLimit)
+            {
+                elapsedRealTime += Time.deltaTime;
 
-            float currentGameSeconds = (elapsedRealTime * 12f) + startSeconds;
+                // Multiplier of 30 means 2 minutes of real time = 1 hour of game time
+                // 23:00 (Start) -> 00:00 (Midnight/Deadline)
+                float gameTimeMultiplier = 20f; 
+                float currentGameSeconds = startSeconds + (elapsedRealTime * gameTimeMultiplier);
             
-            timerText.text = FormatTime(currentGameSeconds);
-            
+                timerText.text = FormatTime(currentGameSeconds);
+            }
+            else
+            {
+                // DEADLINE REACHED
+                elapsedRealTime = realTimeLimit;
+                timerText.text = "00:00"; // Force show Midnight
+            }
         }
     }
 
@@ -112,9 +126,13 @@ public class UIManager : MonoBehaviour
     
     private void ShowFinishScreen()
     {
+        isLevelFinished = true;
         finishScreen.SetActive(true);
+        Time.timeScale = 0f;
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
+        gradeText.text =  "Grade Achieved: " + thresholds.CalculateGrade(elapsedRealTime);
+        
     }
 }
 
